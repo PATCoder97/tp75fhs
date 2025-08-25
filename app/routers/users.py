@@ -5,7 +5,7 @@ from typing import List
 from app.database.session import get_db
 from app.schemas.user import UserCreate, UserUpdate, UserOut
 from app.services.user_service import UserService
-from app.core.security import admin_required
+from app.core.security import admin_required, admin_or_mod_required
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -22,7 +22,7 @@ def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     service = UserService(db)
     return service.get_users(skip, limit)
 
-@router.get("/{user_id}", response_model=UserOut)
+@router.get("/{user_id}", response_model=UserOut, dependencies=[Depends(admin_or_mod_required)])
 def get_user(user_id: str, db: Session = Depends(get_db)):
     service = UserService(db)
     user = service.get_user(user_id)
