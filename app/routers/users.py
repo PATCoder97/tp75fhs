@@ -5,10 +5,11 @@ from typing import List
 from app.database.session import get_db
 from app.schemas.user import UserCreate, UserUpdate, UserOut
 from app.services.user_service import UserService
+from app.core.security import admin_required
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-@router.post("/", response_model=UserOut)
+@router.post("/", response_model=UserOut, dependencies=[Depends(admin_required)])
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     service = UserService(db)
     existing_user = service.get_user(user.user_id)
@@ -16,7 +17,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=409, detail=f"User {user.user_id} already exists")
     return service.create_user(user)
 
-@router.get("/", response_model=List[UserOut])
+@router.get("/", response_model=List[UserOut], dependencies=[Depends(admin_required)])
 def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     service = UserService(db)
     return service.get_users(skip, limit)
