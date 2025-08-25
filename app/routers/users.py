@@ -11,6 +11,9 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.post("/", response_model=UserOut)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     service = UserService(db)
+    existing_user = service.get_user(user.user_id)
+    if existing_user:
+        raise HTTPException(status_code=409, detail=f"User {user.user_id} already exists")
     return service.create_user(user)
 
 @router.get("/", response_model=List[UserOut])
