@@ -1,33 +1,32 @@
 # app/database/session.py
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from typing import Generator
+from typing import AsyncGenerator
 from app.core.config import settings
 
-# Lấy DATABASE_URL từ cấu hình
-DATABASE_URL = settings.DATABASE_URL
+# Convert DATABASE_URL to async format (postgresql:// -> postgresql+asyncpg://)
+ASYNC_DATABASE_URL = settings.DATABASE_URL.replace('postgresql://', 'postgresql+asyncpg://')
 
-# Engine (sync)
-engine = create_engine(
-    DATABASE_URL,
-    echo=False,           # bật True để debug SQL
-    pool_pre_ping=True,   # tự check connection trước khi dùng
+# Async engine
+engine = create_async_engine(
+    ASYNC_DATABASE_URL,
+    echo=False,
+    pool_pre_ping=True,
     future=True
 )
 
-# Session factory
-SessionLocal = sessionmaker(
-    bind=engine,
-    autoflush=False,
-    autocommit=False,
-    expire_on_commit=False,
-    future=True
+# Async session factory
+AsyncSessionLocal = sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False
 )
 
-# Dependency dùng trong FastAPI route
-def get_db() -> Generator:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Async dependency
+async def get_db() -> AsyncGenerator:
+    async with AsyncSessionLocal() as db:
+        try:
+            yield db
+        finally:
+            await db.close()
+

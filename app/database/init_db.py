@@ -1,37 +1,19 @@
 # app/database/init_db.py
-from sqlalchemy.orm import Session
-from app.database.session import engine, SessionLocal
+from app.database.session import engine
 from app.database.base import Base
-# from app.models.user import User  # nếu cần seed
-# from app.schemas.user import UserCreate  # nếu bạn muốn truyền schema
 
-def create_tables() -> None:
-    """
-    Tạo toàn bộ bảng theo models đã khai báo (Base.metadata).
-    Chạy 1 lần khi khởi tạo hệ thống (hoặc dùng Alembic migration ở prod).
-    """
-    Base.metadata.create_all(bind=engine)
+async def create_tables() -> None:
+    import app.models  # đảm bảo đã load models
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-def seed_data(db: Session) -> None:
-    """
-    Thêm dữ liệu ban đầu (admin user, roles, master data...).
-    Tránh seed trùng bằng cách kiểm tra đã tồn tại chưa.
-    """
-    # Ví dụ minh họa (giả sử có model User):
-    # if not db.query(User).filter(User.email == "admin@example.com").first():
-    #     admin = User(email="admin@example.com", hashed_password=hash_pw("changeme"))
-    #     db.add(admin)
-    #     db.commit()
-    #     db.refresh(admin)
+async def seed_data_async(session) -> None:
+    # ví dụ seed; bỏ qua nếu chưa cần
     pass
 
-def init_db() -> None:
-    """
-    Gọi khi app start (tuỳ chọn) hoặc tạo 1 lệnh riêng.
-    """
-    create_tables()
-    db = SessionLocal()
-    try:
-        seed_data(db)
-    finally:
-        db.close()
+async def init_db(seed: bool = False) -> None:
+    await create_tables()
+    if seed:
+        from app.database.session import AsyncSessionLocal  # async session
+        async with AsyncSessionLocal() as db:
+            await seed_data_async(db)
