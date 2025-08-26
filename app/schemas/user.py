@@ -13,7 +13,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     # user_id dùng để login
-    user_id: str = Field(..., min_length=1, max_length=10)
+    user_id: str = Field(..., min_length=10, max_length=10)
     # nhận plain password từ client để hash ở service
     password: str = Field(..., min_length=6, max_length=128)
 

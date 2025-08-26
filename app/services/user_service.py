@@ -13,7 +13,7 @@ class UserService:
         self.db = db
 
     async def get_user(self, user_id: str) -> Optional[User]:
-        result = await self.db.execute(select(User).filter(User.user_id == user_id))
+        result = await self.db.execute(select(User).filter(User.user_id == user_id.upper()))
         return result.scalar_one_or_none()
 
     async def get_users(self, skip: int = 0, limit: int = 100) -> List[User]:
@@ -23,7 +23,7 @@ class UserService:
     async def create_user(self, user: UserCreate) -> User:
         hashed_password = pwd_context.hash(user.password)
         db_user = User(
-            user_id=user.user_id,
+            user_id=user.user_id.upper(),
             password_hash=hashed_password,
             full_name=user.full_name,
             role=user.role,
