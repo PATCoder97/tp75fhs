@@ -1,7 +1,7 @@
 # app/main.py
 from fastapi import FastAPI
 from app.database.init_db import init_db
-from app.routers import users, auth, fhshrs
+from app.routers import users, auth, fhshrs, performance, dorm_utility
 from app.core.middleware import init_middleware
 
 app = FastAPI(
@@ -20,6 +20,8 @@ init_middleware(app)
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(fhshrs.router)
+app.include_router(performance.router)
+app.include_router(dorm_utility.router)
 
 # # (Tuỳ chọn) Khởi tạo DB khi start app trong môi trường DEV/DEMO
 # @app.on_event("startup")
