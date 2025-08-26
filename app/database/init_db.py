@@ -1,6 +1,7 @@
 # app/database/init_db.py
-from app.database.session import engine
+from app.database.session import engine, AsyncSessionLocal
 from app.database.base import Base
+from app.database.seed import seed_initial_data
 
 async def create_tables() -> None:
     import app.models  # đảm bảo đã load models
@@ -12,8 +13,12 @@ async def seed_data_async(session) -> None:
     pass
 
 async def init_db(seed: bool = False) -> None:
+    # Import all models
+    from app.models.user import User
+    from app.models.performance import Performance
+    from app.models.dorm_utility import DormUtility
+    
     await create_tables()
-    if seed:
-        from app.database.session import AsyncSessionLocal  # async session
-        async with AsyncSessionLocal() as db:
-            await seed_data_async(db)
+    # Seed initial data
+    async with AsyncSessionLocal() as session:
+        await seed_initial_data(session)

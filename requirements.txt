@@ -1,9 +1,24 @@
-fastapi>=0.100.0
-uvicorn>=0.22.0
-sqlalchemy>=2.0.0
-pydantic>=2.0.0
-pydantic-settings>=2.0.0
-passlib[bcrypt]>=1.7.4
-python-dotenv>=1.0.0
-alembic>=1.11.0
-psycopg2-binary>=2.9.6
+# Web Framework
+fastapi==0.103.1
+uvicorn[standard]==0.23.2
+starlette==0.27.0
+
+# Database
+sqlalchemy==2.0.20
+asyncpg==0.28.0
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Data Validation & Settings
+pydantic==2.3.0
+pydantic-settings==2.0.3
+
+# HTTP Client (for FHS HRS integration)
+httpx==0.24.1
+
+# Environment Variables
+python-dotenv==1.0.0
+

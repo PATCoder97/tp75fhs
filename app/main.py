@@ -23,7 +23,7 @@ app.include_router(fhshrs.router)
 app.include_router(performance.router)
 app.include_router(dorm_utility.router)
 
-# # (Tuỳ chọn) Khởi tạo DB khi start app trong môi trường DEV/DEMO
-# @app.on_event("startup")
-# def on_startup():
-#     init_db()
+# Enable auto DB initialization on startup
+@app.on_event("startup")
+async def on_startup():
+    await init_db()
