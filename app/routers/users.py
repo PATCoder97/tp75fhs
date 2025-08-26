@@ -30,7 +30,7 @@ def get_user(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.put("/{user_id}", response_model=UserOut)
+@router.put("/{user_id}", response_model=UserOut, dependencies=[Depends(admin_or_mod_required)])
 def update_user(user_id: str, user: UserUpdate, db: Session = Depends(get_db)):
     service = UserService(db)
     updated_user = service.update_user(user_id, user)
@@ -38,7 +38,7 @@ def update_user(user_id: str, user: UserUpdate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", dependencies=[Depends(admin_or_mod_required)])
 def delete_user(user_id: str, db: Session = Depends(get_db)):
     service = UserService(db)
     if not service.delete_user(user_id):
