@@ -9,10 +9,11 @@ from datetime import datetime, date
 import httpx
 
 from app.schemas.fhshrs import *
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = "https://www.fhs.com.tw/ads/api/Furnace/rest/json/hr"
+BASE_URL = settings.FHS_HRS_BASE_URL
 
 # ===== Utilities =====
 
@@ -172,7 +173,6 @@ async def get_archivement_by_empid(empid: int, client: HRClient) -> List[Archive
 async def get_quarter_by_empid(empid: int, year: int, quarter: int, client: HRClient) -> QuarterResp:
     text = await client.fetch_text(f"s24/VNW00{empid:05d}vkokv{year}vkokvqr{quarter}")
     fields = (text or "").strip().split("|")
-    # Dùng tới index 13 → cần >= 14
     if len(fields) < 14:
         raise ValueError("Dữ liệu quý không đầy đủ")
     return QuarterResp(
