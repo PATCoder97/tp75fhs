@@ -22,7 +22,7 @@ async def get_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(
     service = UserService(db)
     return await service.get_users(skip, limit)
 
-@router.get("/{user_id}", response_model=UserOut, dependencies=[Depends(admin_or_mod_required)])
+@router.get("/{user_id}", response_model=UserOut, dependencies=[Depends(admin_required)])
 async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     user = await service.get_user(user_id)
@@ -30,7 +30,7 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.put("/{user_id}", response_model=UserOut, dependencies=[Depends(admin_or_mod_required)])
+@router.put("/{user_id}", response_model=UserOut, dependencies=[Depends(admin_required)])
 async def update_user(user_id: str, user: UserUpdate, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     updated_user = await service.update_user(user_id, user)
@@ -38,7 +38,7 @@ async def update_user(user_id: str, user: UserUpdate, db: AsyncSession = Depends
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
 
-@router.delete("/{user_id}", dependencies=[Depends(admin_or_mod_required)])
+@router.delete("/{user_id}", dependencies=[Depends(admin_required)])
 async def delete_user(user_id: str, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     if not await service.delete_user(user_id):

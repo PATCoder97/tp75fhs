@@ -6,11 +6,11 @@ from datetime import date
 from app.database.session import get_db
 from app.schemas.dorm_utility import DormUtilityCreate, DormUtilityOut
 from app.services.dorm_utility_service import DormUtilityService
-from app.core.security import admin_or_mod_required
+from app.core.security import login_required
 
 router = APIRouter(prefix="/dorm-utilities", tags=["dorm-utilities"])
 
-@router.post("/", response_model=DormUtilityOut, dependencies=[Depends(admin_or_mod_required)])
+@router.post("/", response_model=DormUtilityOut, dependencies=[Depends(login_required)])
 async def create_utility(
     utility: DormUtilityCreate,
     db: AsyncSession = Depends(get_db)
@@ -18,7 +18,7 @@ async def create_utility(
     service = DormUtilityService(db)
     return await service.create_utility(utility)
 
-@router.post("/batch", response_model=List[DormUtilityOut], dependencies=[Depends(admin_or_mod_required)])
+@router.post("/batch", response_model=List[DormUtilityOut], dependencies=[Depends(login_required)])
 async def create_utilities_batch(
     utilities: List[DormUtilityCreate],
     db: AsyncSession = Depends(get_db)
@@ -26,7 +26,7 @@ async def create_utilities_batch(
     service = DormUtilityService(db)
     return await service.create_utilities(utilities)
 
-@router.get("/", response_model=List[DormUtilityOut])
+@router.get("/", response_model=List[DormUtilityOut], dependencies=[Depends(login_required)])
 async def get_utilities(
     skip: int = 0,
     limit: int = 100,
@@ -44,7 +44,7 @@ async def get_utilities(
         period_month=period_month
     )
 
-@router.get("/{utility_id}", response_model=DormUtilityOut)
+@router.get("/{utility_id}", response_model=DormUtilityOut, dependencies=[Depends(login_required)])
 async def get_utility(
     utility_id: int,
     db: AsyncSession = Depends(get_db)

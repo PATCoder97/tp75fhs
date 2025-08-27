@@ -59,3 +59,6 @@ def admin_or_mod_required(user = Depends(get_current_user)):
             detail="You don't have permission to perform this action"
         )
     return user
+
+def login_required(user = Depends(get_current_user)):
+    return user

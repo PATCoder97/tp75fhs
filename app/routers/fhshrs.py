@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from datetime import date
+from app.core.security import admin_required, login_required
 
 from app.integrations.fhshrs_service import (
     HRClient,
@@ -31,14 +32,14 @@ async def get_hr_client():
     finally:
         await client.close()
 
-@router.get("/employees/{emp_id}", response_model=EmployeeResp)
+@router.get("/employees/{emp_id}", response_model=EmployeeResp, dependencies=[Depends(login_required)])
 async def get_employee(emp_id: int, client: HRClient = Depends(get_hr_client)):
     try:
         return await get_employee_by_empid(emp_id, client)
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/employees/{emp_id}/salary/{year}/{month}", response_model=SalaryResp)
+@router.get("/employees/{emp_id}/salary/{year}/{month}", response_model=SalaryResp, dependencies=[Depends(login_required)])
 async def get_salary(
     emp_id: int, 
     year: int, 
@@ -50,14 +51,14 @@ async def get_salary(
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/employees/{emp_id}/archivements", response_model=List[ArchivementResp])
+@router.get("/employees/{emp_id}/archivements", response_model=List[ArchivementResp], dependencies=[Depends(login_required)])
 async def get_archivements(emp_id: int, client: HRClient = Depends(get_hr_client)):
     try:
         return await get_archivement_by_empid(emp_id, client)
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/employees/{emp_id}/quarter/{year}/{quarter}", response_model=QuarterResp)
+@router.get("/employees/{emp_id}/quarter/{year}/{quarter}", response_model=QuarterResp, dependencies=[Depends(login_required)])
 async def get_quarter(
     emp_id: int,
     year: int,
@@ -69,7 +70,7 @@ async def get_quarter(
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/employees/{emp_id}/year-bonus/{year}", response_model=YearBonusResp)
+@router.get("/employees/{emp_id}/year-bonus/{year}", response_model=YearBonusResp, dependencies=[Depends(login_required)])
 async def get_year_bonus(
     emp_id: int,
     year: int,
@@ -80,7 +81,7 @@ async def get_year_bonus(
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/employees/{emp_id}/leaves/{year}", response_model=List[OnLeaveResp])
+@router.get("/employees/{emp_id}/leaves/{year}", response_model=List[OnLeaveResp], dependencies=[Depends(login_required)])
 async def get_leaves(
     emp_id: int,
     year: int,
@@ -91,7 +92,7 @@ async def get_leaves(
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/lunch/{date}/{place}", response_model=List[OrderLunchResp])
+@router.get("/lunch/{date}/{place}", response_model=List[OrderLunchResp], dependencies=[Depends(login_required)])
 async def get_lunch_orders(
     date: date,
     place: str,
