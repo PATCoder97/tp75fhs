@@ -2,10 +2,16 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Cài toolchain để pip compile các package không có wheel sẵn (bcrypt, cffi, cryptography, ...)
+# Giữ layer riêng để có thể remove sau khi cài xong dependencies (giảm size)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3-dev \
+    libffi-dev \
+    cargo \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY . .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
