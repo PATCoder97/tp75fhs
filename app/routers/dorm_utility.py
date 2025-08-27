@@ -10,7 +10,7 @@ from app.core.security import login_required
 
 router = APIRouter(prefix="/dorm-utilities", tags=["dorm-utilities"])
 
-@router.post("/", response_model=DormUtilityOut, dependencies=[Depends(login_required)])
+@router.post("/", response_model=DormUtilityOut)
 async def create_utility(
     utility: DormUtilityCreate,
     db: AsyncSession = Depends(get_db)
@@ -18,7 +18,7 @@ async def create_utility(
     service = DormUtilityService(db)
     return await service.create_utility(utility)
 
-@router.post("/batch", response_model=List[DormUtilityOut], dependencies=[Depends(login_required)])
+@router.post("/batch", response_model=List[DormUtilityOut])
 async def create_utilities_batch(
     utilities: List[DormUtilityCreate],
     db: AsyncSession = Depends(get_db)

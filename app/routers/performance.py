@@ -8,7 +8,7 @@ from app.core.security import login_required
 
 router = APIRouter(prefix="/performance", tags=["performance"])
 
-@router.post("/", response_model=PerformanceOut, dependencies=[Depends(login_required)])
+@router.post("/", response_model=PerformanceOut)
 async def create_performance(
     performance: PerformanceCreate,
     db: AsyncSession = Depends(get_db)
@@ -16,7 +16,7 @@ async def create_performance(
     service = PerformanceService(db)
     return await service.create_performance(performance)
 
-@router.post("/batch", response_model=List[PerformanceOut], dependencies=[Depends(login_required)])
+@router.post("/batch", response_model=List[PerformanceOut])
 async def create_performances_batch(
     performances: List[PerformanceCreate],
     db: AsyncSession = Depends(get_db)
