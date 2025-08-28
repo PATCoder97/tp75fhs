@@ -17,11 +17,12 @@ app = FastAPI(
 init_middleware(app)
 
 # Đăng ký routers:
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(fhshrs.router)
-app.include_router(performance.router)
-app.include_router(dorm_utility.router)
+app.include_router(auth.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
+app.include_router(fhshrs.router, prefix="/api")
+app.include_router(performance.router, prefix="/api")
+app.include_router(dorm_utility.router, prefix="/api")
+
 
 # Enable auto DB initialization on startup
 @app.on_event("startup")
